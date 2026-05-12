@@ -39,7 +39,6 @@
       overflow: hidden;
     }
 
-    /* ── HEADER ── */
     header {
       height: var(--header);
       background: var(--bg2);
@@ -94,14 +93,12 @@
       50%       { opacity: 0.4; transform: scale(0.8); }
     }
 
-    /* ── LAYOUT ── */
     .app-body {
       flex: 1;
       display: flex;
       overflow: hidden;
     }
 
-    /* ── SIDEBAR ── */
     aside {
       width: var(--sidebar);
       background: var(--bg2);
@@ -134,13 +131,10 @@
       color: var(--muted);
     }
     .nav-item:hover { background: var(--bg3); color: var(--text); }
-    .nav-item.active {
-      background: var(--bg3);
-      color: var(--text);
-    }
-    .nav-item.active.calera  { border-left-color: var(--calera); }
-    .nav-item.active.turmeque{ border-left-color: var(--turmeque); }
-    .nav-item.active.red     { border-left-color: var(--warn); }
+    .nav-item.active { background: var(--bg3); color: var(--text); }
+    .nav-item.active.calera   { border-left-color: var(--calera); }
+    .nav-item.active.turmeque { border-left-color: var(--turmeque); }
+    .nav-item.active.red      { border-left-color: var(--warn); }
 
     .nav-dot {
       width: 8px; height: 8px;
@@ -159,7 +153,6 @@
       font-family: var(--font-mono);
     }
 
-    /* ── MAIN CONTENT ── */
     main {
       flex: 1;
       display: flex;
@@ -168,7 +161,6 @@
       position: relative;
     }
 
-    /* ── TABS ── */
     .tab-bar {
       display: flex;
       background: var(--bg2);
@@ -188,21 +180,13 @@
     .tab:hover { color: var(--text); }
     .tab.active { color: var(--text); border-bottom-color: var(--accent); }
 
-    /* ── PANELS ── */
     .panel { flex: 1; display: none; overflow: hidden; }
     .panel.active { display: flex; flex-direction: column; }
 
-    /* Mapa */
-    #map-container {
-      flex: 1;
-      position: relative;
-    }
-    #map {
-      width: 100%;
-      height: 100%;
-    }
+    #map-container { flex: 1; position: relative; }
+    #map { width: 100%; height: 100%; }
 
-    /* Popup del mapa */
+    /* ── POPUP ESTILOS ── */
     .leaflet-popup-content-wrapper {
       background: var(--bg2);
       border: 1px solid var(--border);
@@ -212,19 +196,52 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     }
     .leaflet-popup-tip { background: var(--bg2); }
+
     .popup-title {
       font-family: var(--font-mono);
       font-size: 0.8rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       letter-spacing: 0.05em;
     }
     .popup-id {
       font-size: 0.7rem;
       color: var(--muted);
       font-family: var(--font-mono);
+      margin-bottom: 6px;
+    }
+    .popup-elev {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
       margin-bottom: 10px;
     }
+
+    /* Timestamp de última recepción */
+    .popup-timestamp {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: var(--muted);
+      background: var(--bg3);
+      border-radius: 5px;
+      padding: 5px 8px;
+      margin-bottom: 10px;
+      border-left: 2px solid var(--accent);
+    }
+    .popup-timestamp.stale { border-left-color: var(--warn); }
+    .popup-timestamp.error { border-left-color: #ef4444; }
+    .popup-ts-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+    .popup-ts-dot.stale { background: var(--warn); }
+    .popup-ts-dot.error { background: #ef4444; }
+
     .popup-metrics {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -250,12 +267,7 @@
       font-family: var(--font-mono);
     }
     .popup-metric-value.na { color: var(--muted); font-size: 0.75rem; }
-    .popup-elev {
-      font-size: 0.7rem;
-      color: var(--muted);
-      font-family: var(--font-mono);
-      margin-bottom: 10px;
-    }
+
     .popup-btn {
       display: block;
       width: 100%;
@@ -273,12 +285,24 @@
     }
     .popup-btn:hover { opacity: 0.85; }
 
-    /* Dashboard iframe */
-    #dash-panel {
-      flex: 1;
-      display: none;
-      flex-direction: column;
+    /* Skeleton loader animado */
+    .skeleton {
+      display: inline-block;
+      width: 48px;
+      height: 14px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--bg3) 25%, var(--border) 50%, var(--bg3) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+      vertical-align: middle;
     }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Dashboard */
+    #dash-panel { flex: 1; display: none; flex-direction: column; }
     #dash-panel.active { display: flex; }
 
     .dash-header {
@@ -290,16 +314,8 @@
       gap: 12px;
       flex-shrink: 0;
     }
-    .dash-header-title {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      font-weight: 700;
-    }
-    .dash-header-sub {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-left: auto;
-    }
+    .dash-header-title { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; }
+    .dash-header-sub { font-size: 0.75rem; color: var(--muted); margin-left: auto; }
     .back-btn {
       padding: 5px 12px;
       background: var(--bg3);
@@ -313,11 +329,7 @@
     }
     .back-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    #dash-frame {
-      flex: 1;
-      border: none;
-      background: var(--bg);
-    }
+    #dash-frame { flex: 1; border: none; background: var(--bg); }
 
     .no-url-msg {
       flex: 1;
@@ -332,10 +344,7 @@
       text-align: center;
       padding: 40px;
     }
-    .no-url-msg .icon {
-      font-size: 2.5rem;
-      opacity: 0.3;
-    }
+    .no-url-msg .icon { font-size: 2.5rem; opacity: 0.3; }
     .no-url-code {
       background: var(--bg3);
       border: 1px solid var(--border);
@@ -349,7 +358,6 @@
       line-height: 1.6;
     }
 
-    /* Badges de red */
     .badge {
       display: inline-block;
       padding: 2px 8px;
@@ -363,12 +371,10 @@
     .badge-turmeque { background: rgba(0,132,255,0.15); color: var(--turmeque); }
     .badge-red      { background: rgba(245,166,35,0.15); color: var(--warn); }
 
-    /* Scrollbar */
     aside::-webkit-scrollbar { width: 4px; }
     aside::-webkit-scrollbar-track { background: transparent; }
     aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-    /* Leaflet dark override */
     .leaflet-tile-pane { filter: brightness(0.6) saturate(0.7) hue-rotate(200deg); }
     .leaflet-control-zoom a {
       background: var(--bg2) !important;
@@ -382,7 +388,6 @@
     }
     .leaflet-control-attribution a { color: var(--muted) !important; }
 
-    /* Animación de entrada */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -392,7 +397,6 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="logo-mark">
     <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round">
@@ -411,10 +415,8 @@
   </div>
 </header>
 
-<!-- BODY -->
 <div class="app-body">
 
-  <!-- SIDEBAR -->
   <aside>
     <div class="sidebar-section">Redes</div>
 
@@ -440,72 +442,45 @@
 
     <div class="nav-item calera" onclick="selectView('CALERA1')" id="nav-CALERA1">
       <div class="nav-dot dot-calera"></div>
-      <div class="nav-label">
-        CALERA 1
-        <div class="nav-sub">nodo-lora-ud-2</div>
-      </div>
+      <div class="nav-label">CALERA 1<div class="nav-sub">nodo-lora-ud-2</div></div>
     </div>
-
     <div class="nav-item calera" onclick="selectView('CALERA2')" id="nav-CALERA2">
       <div class="nav-dot dot-calera"></div>
-      <div class="nav-label">
-        CALERA 2
-        <div class="nav-sub">nodo-lora-ud-5</div>
-      </div>
+      <div class="nav-label">CALERA 2<div class="nav-sub">nodo-lora-ud-5</div></div>
     </div>
-
     <div class="nav-item calera" onclick="selectView('CALERA3')" id="nav-CALERA3">
       <div class="nav-dot dot-calera"></div>
-      <div class="nav-label">
-        CALERA 3
-        <div class="nav-sub">nodo-lora-ud-6</div>
-      </div>
+      <div class="nav-label">CALERA 3<div class="nav-sub">nodo-lora-ud-6</div></div>
     </div>
-
     <div class="nav-item calera" onclick="selectView('CALERA4')" id="nav-CALERA4">
       <div class="nav-dot dot-calera"></div>
-      <div class="nav-label">
-        CALERA 4
-        <div class="nav-sub">nodo-lora-ud-7</div>
-      </div>
+      <div class="nav-label">CALERA 4<div class="nav-sub">nodo-lora-ud-7</div></div>
     </div>
 
     <div class="sidebar-section">Turméque · Nodos</div>
 
     <div class="nav-item turmeque" onclick="selectView('TURMEQUE1')" id="nav-TURMEQUE1">
       <div class="nav-dot dot-turmeque"></div>
-      <div class="nav-label">
-        TURMEQUÉ 1
-        <div class="nav-sub">nodo-lora-ud-1</div>
-      </div>
+      <div class="nav-label">TURMEQUÉ 1<div class="nav-sub">nodo-lora-ud-1</div></div>
     </div>
-
     <div class="nav-item turmeque" onclick="selectView('TURMEQUE2')" id="nav-TURMEQUE2">
       <div class="nav-dot dot-turmeque"></div>
-      <div class="nav-label">
-        TURMEQUÉ 2
-        <div class="nav-sub">nodo-lora-ud-4</div>
-      </div>
+      <div class="nav-label">TURMEQUÉ 2<div class="nav-sub">nodo-lora-ud-4</div></div>
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main>
-
-    <!-- TAB BAR -->
     <div class="tab-bar">
       <div class="tab active" id="tab-mapa"      onclick="switchTab('mapa')">🗺 Mapa</div>
       <div class="tab"        id="tab-dashboard" onclick="switchTab('dashboard')">📊 Dashboard</div>
     </div>
 
-    <!-- PANEL MAPA -->
     <div class="panel active" id="panel-mapa">
       <div id="map-container">
         <div id="map"></div>
       </div>
     </div>
 
-    <!-- PANEL DASHBOARD -->
     <div class="panel" id="panel-dashboard">
       <div id="dash-panel" class="active">
         <div class="dash-header">
@@ -513,59 +488,188 @@
           <div class="dash-header-title" id="dash-title">Red La Calera</div>
           <div class="dash-header-sub" id="dash-sub">Vista general · 4 nodos</div>
         </div>
-        <div id="dash-content" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
-          <!-- Se rellena dinámicamente -->
-        </div>
+        <div id="dash-content" style="flex:1;display:flex;flex-direction:column;overflow:hidden;"></div>
       </div>
     </div>
-
   </main>
 </div>
 
 <script>
-// ── DATOS DE NODOS ──────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+//  CONFIGURACIÓN
+// ══════════════════════════════════════════════════════════════
+
+// ⚠️  Reemplaza este valor con el token de tu Service Account de Grafana
+//     Administration → Service Accounts → Add service account token
+//     Rol recomendado: Viewer
+const GRAFANA_TOKEN = 'glsa_cBKL4DyQ54GW8SpVJuSSodZNYbhzzG88_2134fe25';
+
+const GRAFANA_BASE      = 'https://grafana.lorawannetworksud.com';
+const GRAFANA_DS_UID    = 'bfidr19tye3nkc';   // UID del datasource InfluxDB
+const INFLUX_BUCKET     = 'wsn_bucket';
+const INFLUX_ORG        = 'Main Org.';
+
+// Cuántas horas hacia atrás buscar el último dato
+// Si un nodo lleva más de este tiempo sin transmitir, se marca como "stale"
+const STALE_HOURS = 2;
+
+// ── NODOS ──────────────────────────────────────────────────────
 const NODOS = {
-  CALERA1:  { nombre: 'CALERA 1',   device: 'nodo-lora-ud-2', lat: 4.722903,  lng: -73.899742, elev: 3217.32, red: 'calera',   anem: true  },
-  CALERA2:  { nombre: 'CALERA 2',   device: 'nodo-lora-ud-5', lat: 4.722264,  lng: -73.899731, elev: 3216.97, red: 'calera',   anem: false },
-  CALERA3:  { nombre: 'CALERA 3',   device: 'nodo-lora-ud-6', lat: 4.723381,  lng: -73.898781, elev: 3231.39, red: 'calera',   anem: false },
-  CALERA4:  { nombre: 'CALERA 4',   device: 'nodo-lora-ud-7', lat: 4.724919,  lng: -73.914233, elev: 3045.43, red: 'calera',   anem: false },
-  TURMEQUE1:{ nombre: 'TURMEQUÉ 1', device: 'nodo-lora-ud-1', lat: 5.259533,  lng: -73.499967, elev: 2954.96, red: 'turmeque', anem: false },
-  TURMEQUE2:{ nombre: 'TURMEQUÉ 2', device: 'nodo-lora-ud-4', lat: 5.259719,  lng: -73.500217, elev: 2951.74, red: 'turmeque', anem: true  },
+  CALERA1:   { nombre: 'CALERA 1',   device: 'nodo-lora-ud-2', lat: 4.722903,  lng: -73.899742, elev: 3217.32, red: 'calera',   anem: true  },
+  CALERA2:   { nombre: 'CALERA 2',   device: 'nodo-lora-ud-5', lat: 4.722264,  lng: -73.899731, elev: 3216.97, red: 'calera',   anem: false },
+  CALERA3:   { nombre: 'CALERA 3',   device: 'nodo-lora-ud-6', lat: 4.723381,  lng: -73.898781, elev: 3231.39, red: 'calera',   anem: false },
+  CALERA4:   { nombre: 'CALERA 4',   device: 'nodo-lora-ud-7', lat: 4.724919,  lng: -73.914233, elev: 3045.43, red: 'calera',   anem: false },
+  TURMEQUE1: { nombre: 'TURMEQUÉ 1', device: 'nodo-lora-ud-1', lat: 5.259533,  lng: -73.499967, elev: 2954.96, red: 'turmeque', anem: false },
+  TURMEQUE2: { nombre: 'TURMEQUÉ 2', device: 'nodo-lora-ud-4', lat: 5.259719,  lng: -73.500217, elev: 2951.74, red: 'turmeque', anem: true  },
 };
 
-// ── URLs DE GRAFANA ─────────────────────────────────────────────
-// Reemplaza cada valor con el link público de Grafana
-// Menú de Grafana → Share → Public dashboard → Copy link
-const GRAFANA_BASE = 'https://grafana.lorawannetworksud.com';
-
+// ── URLs GRAFANA DASHBOARDS ────────────────────────────────────
 const URLS = {
-  'CALERA1':     GRAFANA_BASE + '/public-dashboards/5c81d71f54914fcfa8736fbf7a035824',
-  'CALERA2':     GRAFANA_BASE + '/public-dashboards/2160098e3b594ca99c3774c54c3e72db',
-  'CALERA3':     GRAFANA_BASE + '/public-dashboards/5a99159c9a894024bcd34ba8e57de1e3',
-  'CALERA4':     GRAFANA_BASE + '/public-dashboards/da15ee21e5534d7d8049af2e9d86f510',
-  'TURMEQUE1':   GRAFANA_BASE + '/public-dashboards/5edbd299f2884976af7c23f635bee035',
-  'TURMEQUE2':   GRAFANA_BASE + '/public-dashboards/bb75999416914f2cbc2363e5bc627802',
-  'red-calera':  GRAFANA_BASE + '/public-dashboards/58a50382c5404590bd3e4ff804a8bde0',
-  'red-turmeque':GRAFANA_BASE + '/public-dashboards/af67b1728e084c74aa4c267305204637',
+  'CALERA1':      GRAFANA_BASE + '/public-dashboards/5c81d71f54914fcfa8736fbf7a035824',
+  'CALERA2':      GRAFANA_BASE + '/public-dashboards/2160098e3b594ca99c3774c54c3e72db',
+  'CALERA3':      GRAFANA_BASE + '/public-dashboards/5a99159c9a894024bcd34ba8e57de1e3',
+  'CALERA4':      GRAFANA_BASE + '/public-dashboards/da15ee21e5534d7d8049af2e9d86f510',
+  'TURMEQUE1':    GRAFANA_BASE + '/public-dashboards/5edbd299f2884976af7c23f635bee035',
+  'TURMEQUE2':    GRAFANA_BASE + '/public-dashboards/bb75999416914f2cbc2363e5bc627802',
+  'red-calera':   GRAFANA_BASE + '/public-dashboards/58a50382c5404590bd3e4ff804a8bde0',
+  'red-turmeque': GRAFANA_BASE + '/public-dashboards/af67b1728e084c74aa4c267305204637',
 };
 
-// Datos en tiempo real simulados (reemplazar con llamada a Grafana API o InfluxDB si se desea)
-// Por ahora muestra "—" hasta que se conecten los dashboards
-const LAST_DATA = {
-  CALERA1:   { temp: null, hum: null, bat: null, snr: null, rssi: null, viento: null },
-  CALERA2:   { temp: null, hum: null, bat: null, snr: null, rssi: null, viento: null },
-  CALERA3:   { temp: null, hum: null, bat: null, snr: null, rssi: null, viento: null },
-  CALERA4:   { temp: null, hum: null, bat: null, snr: null, rssi: null, viento: null },
-  TURMEQUE1: { temp: null, hum: null, bat: null, snr: null, rssi: null, viento: null },
-  TURMEQUE2: { temp: null, hum: null, bat: null, snr: null, rssi: null, viento: null },
-};
+// ══════════════════════════════════════════════════════════════
+//  FETCH DE DATOS DESDE INFLUXDB VÍA GRAFANA API
+// ══════════════════════════════════════════════════════════════
 
-// ── ESTADO ──────────────────────────────────────────────────────
+/**
+ * Consulta el último registro de un nodo en InfluxDB.
+ * Usa el proxy de datasource de Grafana para no exponer InfluxDB directamente.
+ *
+ * Retorna: { temp, hum, wind, bat, rssi, snr, timestamp } o null si falla.
+ */
+async function fetchLastReading(device) {
+  // Flux query: trae el último valor de cada field en el measurement del dispositivo
+  // Busca en las últimas 30 días para garantizar encontrar datos aunque el nodo
+  // lleve tiempo sin transmitir. La marca "stale" se aplica en el frontend.
+  const fluxQuery = `
+from(bucket: "${INFLUX_BUCKET}")
+  |> range(start: -720h)
+  |> filter(fn: (r) => r["_measurement"] == "${device}")
+  |> filter(fn: (r) =>
+      r["_field"] == "temperature" or
+      r["_field"] == "humidity" or
+      r["_field"] == "wind_speed" or
+      r["_field"] == "battery" or
+      r["_field"] == "RSSI" or
+      r["_field"] == "SNR"
+  )
+  |> last()
+`;
+
+  const url = `${GRAFANA_BASE}/api/datasources/proxy/uid/${GRAFANA_DS_UID}/api/v2/query?org=${encodeURIComponent(INFLUX_ORG)}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${GRAFANA_TOKEN}`,
+      'Content-Type': 'application/vnd.flux',
+      'Accept': 'application/csv',
+    },
+    body: fluxQuery,
+  });
+
+  if (!response.ok) {
+    console.error(`Grafana API error ${response.status} para ${device}`);
+    return null;
+  }
+
+  const csv = await response.text();
+  return parseFluxCSV(csv);
+}
+
+/**
+ * Parsea la respuesta CSV de InfluxDB Flux.
+ * Devuelve un objeto con los campos mapeados y el timestamp del último dato.
+ */
+function parseFluxCSV(csv) {
+  const result = { temp: null, hum: null, wind: null, bat: null, rssi: null, snr: null, timestamp: null };
+
+  const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('#'));
+  if (lines.length < 2) return result;
+
+  // Primera línea: headers
+  const headers = lines[0].split(',').map(h => h.trim());
+  const iField  = headers.indexOf('_field');
+  const iValue  = headers.indexOf('_value');
+  const iTime   = headers.indexOf('_time');
+
+  if (iField === -1 || iValue === -1) return result;
+
+  let latestTime = null;
+
+  for (let i = 1; i < lines.length; i++) {
+    const cols  = lines[i].split(',');
+    if (cols.length < headers.length) continue;
+
+    const field = cols[iField]?.trim();
+    const value = parseFloat(cols[iValue]?.trim());
+    const time  = cols[iTime]?.trim();
+
+    if (isNaN(value)) continue;
+
+    // Guardar el timestamp más reciente de cualquier field
+    if (time) {
+      const t = new Date(time);
+      if (!latestTime || t > latestTime) latestTime = t;
+    }
+
+    switch (field) {
+      case 'temperature': result.temp  = value; break;
+      case 'humidity':    result.hum   = value; break;
+      case 'wind_speed':  result.wind  = value; break;
+      case 'battery':     result.bat   = value; break;
+      case 'RSSI':        result.rssi  = value; break;
+      case 'SNR':         result.snr   = value; break;
+    }
+  }
+
+  result.timestamp = latestTime;
+  return result;
+}
+
+/**
+ * Formatea un Date como "hace X min / horas" + hora local.
+ * Retorna { label, isStale, isError }
+ */
+function formatTimestamp(ts) {
+  if (!ts) return { label: 'Sin datos recientes', isStale: false, isError: true };
+
+  const now   = new Date();
+  const diffMs = now - ts;
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffH   = Math.floor(diffMin / 60);
+
+  const horaLocal = ts.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+  const fechaLocal = ts.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit' });
+
+  let relativa;
+  if (diffMin < 1)       relativa = 'hace menos de 1 min';
+  else if (diffMin < 60) relativa = `hace ${diffMin} min`;
+  else if (diffH < 24)   relativa = `hace ${diffH} h`;
+  else                   relativa = `hace ${Math.floor(diffH/24)} d`;
+
+  const isStale = diffH >= STALE_HOURS;
+  const label   = `${relativa} · ${horaLocal} ${fechaLocal}`;
+
+  return { label, isStale, isError: false };
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MAPA
+// ══════════════════════════════════════════════════════════════
+
+let map, markers = {};
 let currentView = 'red-calera';
 let currentTab  = 'mapa';
-let map, markers = {};
 
-// ── MAPA ────────────────────────────────────────────────────────
 function initMap() {
   map = L.map('map', { zoomControl: true }).setView([4.98, -73.7], 9);
 
@@ -586,64 +690,148 @@ function initMap() {
         border-radius:50%;
         box-shadow:0 0 0 3px ${color}44, 0 2px 8px rgba(0,0,0,0.5);
       "></div>`,
-      iconSize: [14, 14],
+      iconSize:   [14, 14],
       iconAnchor: [7, 7],
-      popupAnchor: [0, -10],
+      popupAnchor:[0, -10],
     });
 
-    const d = LAST_DATA[id];
-    const fmt = (v, u) => v !== null ? `${v}${u}` : '—';
-
-    const popupHtml = `
-      <div style="min-width:200px">
-        <div class="popup-title">${n.nombre}</div>
-        <div class="popup-id">${n.device}</div>
-        <div class="popup-elev">⛰ ${n.elev.toFixed(0)} m.s.n.m · ${n.lat.toFixed(5)}, ${n.lng.toFixed(5)}</div>
-        <div class="popup-metrics">
-          <div class="popup-metric">
-            <div class="popup-metric-label">Temperatura</div>
-            <div class="popup-metric-value">${fmt(d.temp,'°C')}</div>
-          </div>
-          <div class="popup-metric">
-            <div class="popup-metric-label">Humedad</div>
-            <div class="popup-metric-value">${fmt(d.hum,'%')}</div>
-          </div>
-          <div class="popup-metric">
-            <div class="popup-metric-label">Batería</div>
-            <div class="popup-metric-value">${fmt(d.bat,'%')}</div>
-          </div>
-          ${n.anem ? `
-          <div class="popup-metric">
-            <div class="popup-metric-label">Viento</div>
-            <div class="popup-metric-value">${fmt(d.viento,' m/s')}</div>
-          </div>` : `
-          <div class="popup-metric">
-            <div class="popup-metric-label">Viento</div>
-            <div class="popup-metric-value na">Sin sensor</div>
-          </div>`}
-          <div class="popup-metric">
-            <div class="popup-metric-label">SNR</div>
-            <div class="popup-metric-value">${fmt(d.snr,' dB')}</div>
-          </div>
-          <div class="popup-metric">
-            <div class="popup-metric-label">RSSI</div>
-            <div class="popup-metric-value">${fmt(d.rssi,' dBm')}</div>
-          </div>
-        </div>
-        <button class="popup-btn" onclick="abrirDashboard('${id}')">Ver dashboard completo →</button>
-      </div>`;
-
     const marker = L.marker([n.lat, n.lng], { icon })
-      .bindPopup(popupHtml, { maxWidth: 260 })
       .addTo(map);
+
+    // Popup inicial con skeleton loaders
+    marker.bindPopup(buildSkeletonPopup(n, id), { maxWidth: 260 });
+
+    // Al abrir el popup → lanzar fetch real
+    marker.on('popupopen', () => {
+      loadPopupData(id, marker);
+    });
 
     markers[id] = marker;
   });
 }
 
+/** Popup con skeletons mientras carga */
+function buildSkeletonPopup(n, id) {
+  const sk = `<span class="skeleton"></span>`;
+  return `
+    <div style="min-width:210px">
+      <div class="popup-title">${n.nombre}</div>
+      <div class="popup-id">${n.device}</div>
+      <div class="popup-elev">⛰ ${n.elev.toFixed(0)} m.s.n.m · ${n.lat.toFixed(5)}, ${n.lng.toFixed(5)}</div>
+      <div class="popup-timestamp" id="pts-${id}">
+        <div class="popup-ts-dot"></div>
+        <span>Consultando datos…</span>
+      </div>
+      <div class="popup-metrics">
+        <div class="popup-metric">
+          <div class="popup-metric-label">Temperatura</div>
+          <div class="popup-metric-value" id="pv-temp-${id}">${sk}</div>
+        </div>
+        <div class="popup-metric">
+          <div class="popup-metric-label">Humedad</div>
+          <div class="popup-metric-value" id="pv-hum-${id}">${sk}</div>
+        </div>
+        <div class="popup-metric">
+          <div class="popup-metric-label">Batería</div>
+          <div class="popup-metric-value" id="pv-bat-${id}">${sk}</div>
+        </div>
+        ${n.anem ? `
+        <div class="popup-metric">
+          <div class="popup-metric-label">Viento</div>
+          <div class="popup-metric-value" id="pv-wind-${id}">${sk}</div>
+        </div>` : `
+        <div class="popup-metric">
+          <div class="popup-metric-label">Viento</div>
+          <div class="popup-metric-value na">Sin sensor</div>
+        </div>`}
+        <div class="popup-metric">
+          <div class="popup-metric-label">SNR</div>
+          <div class="popup-metric-value" id="pv-snr-${id}">${sk}</div>
+        </div>
+        <div class="popup-metric">
+          <div class="popup-metric-label">RSSI</div>
+          <div class="popup-metric-value" id="pv-rssi-${id}">${sk}</div>
+        </div>
+      </div>
+      <button class="popup-btn" onclick="abrirDashboard('${id}')">Ver dashboard completo →</button>
+    </div>`;
+}
+
+/** Fetch real y actualización del popup ya abierto */
+async function loadPopupData(id, marker) {
+  const n = NODOS[id];
+
+  // Si el token no está configurado, mostrar aviso
+  if (GRAFANA_TOKEN === 'TU_SERVICE_ACCOUNT_TOKEN_AQUI') {
+    setPopupError(id, '⚠ Configura GRAFANA_TOKEN en el código');
+    return;
+  }
+
+  let data;
+  try {
+    data = await fetchLastReading(n.device);
+  } catch (e) {
+    console.error('Error fetching data:', e);
+    setPopupError(id, 'Error de conexión con Grafana');
+    return;
+  }
+
+  if (!data) {
+    setPopupError(id, 'No se pudo leer InfluxDB');
+    return;
+  }
+
+  // Formatear valores
+  const fmt = (v, dec, unit) => (v !== null && !isNaN(v)) ? `${v.toFixed(dec)}${unit}` : '—';
+
+  const tsInfo = formatTimestamp(data.timestamp);
+
+  // Actualizar timestamp
+  const tsEl = document.getElementById(`pts-${id}`);
+  if (tsEl) {
+    const dotClass = tsInfo.isError ? 'error' : tsInfo.isStale ? 'stale' : '';
+    tsEl.className = `popup-timestamp${tsInfo.isStale || tsInfo.isError ? ' ' + dotClass : ''}`;
+    tsEl.innerHTML = `
+      <div class="popup-ts-dot${dotClass ? ' ' + dotClass : ''}"></div>
+      <span>${tsInfo.label}</span>`;
+  }
+
+  // Actualizar métricas
+  const set = (fieldId, val) => {
+    const el = document.getElementById(`pv-${fieldId}-${id}`);
+    if (el) el.innerHTML = val;
+  };
+
+  set('temp', fmt(data.temp,  1, ' °C'));
+  set('hum',  fmt(data.hum,   1, ' %'));
+  set('bat',  fmt(data.bat,   0, ' %'));
+  set('snr',  fmt(data.snr,   1, ' dB'));
+  set('rssi', fmt(data.rssi,  0, ' dBm'));
+  if (n.anem) set('wind', fmt(data.wind, 1, ' m/s'));
+
+  // Ajustar tamaño del popup (por si cambió el contenido)
+  marker.getPopup().update();
+}
+
+function setPopupError(id, msg) {
+  const tsEl = document.getElementById(`pts-${id}`);
+  if (tsEl) {
+    tsEl.className = 'popup-timestamp error';
+    tsEl.innerHTML = `<div class="popup-ts-dot error"></div><span>${msg}</span>`;
+  }
+  ['temp','hum','bat','wind','snr','rssi'].forEach(f => {
+    const el = document.getElementById(`pv-${f}-${id}`);
+    if (el) { el.className = 'popup-metric-value na'; el.textContent = '—'; }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  NAVEGACIÓN
+// ══════════════════════════════════════════════════════════════
+
 function focusRed(red) {
-  const nodos = Object.entries(NODOS).filter(([,n]) => n.red === red);
-  const bounds = L.latLngBounds(nodos.map(([,n]) => [n.lat, n.lng]));
+  const nodos = Object.entries(NODOS).filter(([, n]) => n.red === red);
+  const bounds = L.latLngBounds(nodos.map(([, n]) => [n.lat, n.lng]));
   map.fitBounds(bounds, { padding: [60, 60] });
 }
 
@@ -653,33 +841,28 @@ function focusNodo(id) {
   setTimeout(() => markers[id].openPopup(), 300);
 }
 
-// ── NAVEGACIÓN ──────────────────────────────────────────────────
 function selectView(id) {
   currentView = id;
-
-  // Actualizar sidebar activo
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   const navEl = document.getElementById('nav-' + id);
   if (navEl) navEl.classList.add('active');
 
-  // Actualizar dash header
   if (id === 'red-calera') {
     document.getElementById('dash-title').textContent = 'Red La Calera';
-    document.getElementById('dash-sub').textContent = 'Vista general · 4 nodos';
+    document.getElementById('dash-sub').textContent   = 'Vista general · 4 nodos';
   } else if (id === 'red-turmeque') {
     document.getElementById('dash-title').textContent = 'Red Turméque';
-    document.getElementById('dash-sub').textContent = 'Vista general · 2 nodos';
+    document.getElementById('dash-sub').textContent   = 'Vista general · 2 nodos';
   } else {
     const n = NODOS[id];
     document.getElementById('dash-title').textContent = n.nombre;
-    document.getElementById('dash-sub').textContent = n.device + (n.anem ? ' · con anemómetro' : '');
+    document.getElementById('dash-sub').textContent   = n.device + (n.anem ? ' · con anemómetro' : '');
   }
 
-  // Si estamos en mapa, mover cámara
   if (currentTab === 'mapa') {
-    if (id === 'red-calera')   focusRed('calera');
+    if (id === 'red-calera')        focusRed('calera');
     else if (id === 'red-turmeque') focusRed('turmeque');
-    else focusNodo(id);
+    else                            focusNodo(id);
   } else {
     renderDash(id);
   }
@@ -699,7 +882,7 @@ function switchTab(tab) {
 
   if (tab === 'mapa') {
     setTimeout(() => map.invalidateSize(), 50);
-    if (currentView === 'red-calera')    focusRed('calera');
+    if (currentView === 'red-calera')        focusRed('calera');
     else if (currentView === 'red-turmeque') focusRed('turmeque');
     else focusNodo(currentView);
   } else {
@@ -711,21 +894,18 @@ function renderDash(id) {
   const url = URLS[id];
   const container = document.getElementById('dash-content');
 
-  if (!url || url.includes('REEMPLAZAR')) {
+  if (!url) {
     container.innerHTML = `
       <div class="no-url-msg">
         <div class="icon">📊</div>
         <div>Dashboard pendiente de configurar</div>
-        <div style="font-size:0.75rem;margin-top:4px;">Agrega la URL en el archivo index.html:</div>
-        <div class="no-url-code">'${id}': GRAFANA_BASE + '/d/UID_DEL_DASHBOARD/nombre?orgId=1&kiosk'</div>
-        <div style="font-size:0.72rem;margin-top:8px;color:var(--muted)">
-          En Grafana: abre el dashboard → Share → Copy link
-        </div>
+        <div class="no-url-code">'${id}': GRAFANA_BASE + '/d/UID/nombre?orgId=1&kiosk'</div>
       </div>`;
     return;
   }
 
-  container.innerHTML = `<iframe id="dash-frame" src="${url}" style="flex:1;border:none;width:100%;height:100%;background:var(--bg)"></iframe>`;
+  container.innerHTML = `<iframe id="dash-frame" src="${url}"
+    style="flex:1;border:none;width:100%;height:100%;background:var(--bg)"></iframe>`;
 }
 
 // ── INIT ────────────────────────────────────────────────────────
