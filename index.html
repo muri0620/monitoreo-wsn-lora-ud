@@ -499,15 +499,8 @@
 //  CONFIGURACIÓN
 // ══════════════════════════════════════════════════════════════
 
-// ⚠️  Reemplaza este valor con el token de tu Service Account de Grafana
-//     Administration → Service Accounts → Add service account token
-//     Rol recomendado: Viewer
-const GRAFANA_TOKEN = 'glsa_cBKL4DyQ54GW8SpVJuSSodZNYbhzzG88_2134fe25';
-
-const GRAFANA_BASE      = 'https://grafana.lorawannetworksud.com';
-const GRAFANA_DS_UID    = 'bfidr19tye3nkc';   // UID del datasource InfluxDB
-const INFLUX_BUCKET     = 'wsn_bucket';
-const INFLUX_ORG        = 'LoRaWAN_UD';
+// URL del Cloudflare Worker que actúa de proxy hacia InfluxDB
+const WORKER_URL = 'https://wsn-influx-proxy.davidnova06.workers.dev';
 
 // Cuántas horas hacia atrás buscar el último dato
 // Si un nodo lleva más de este tiempo sin transmitir, se marca como "stale"
@@ -524,6 +517,8 @@ const NODOS = {
 };
 
 // ── URLs GRAFANA DASHBOARDS ────────────────────────────────────
+const GRAFANA_BASE = 'https://grafana.lorawannetworksud.com';
+
 const URLS = {
   'CALERA1':      GRAFANA_BASE + '/public-dashboards/5c81d71f54914fcfa8736fbf7a035824',
   'CALERA2':      GRAFANA_BASE + '/public-dashboards/2160098e3b594ca99c3774c54c3e72db',
@@ -536,103 +531,33 @@ const URLS = {
 };
 
 // ══════════════════════════════════════════════════════════════
-//  FETCH DE DATOS DESDE INFLUXDB VÍA GRAFANA API
+//  FETCH DE DATOS VÍA CLOUDFLARE WORKER
 // ══════════════════════════════════════════════════════════════
 
 /**
- * Consulta el último registro de un nodo en InfluxDB.
- * Usa el proxy de datasource de Grafana para no exponer InfluxDB directamente.
- *
+ * Consulta el último registro de un nodo via el Cloudflare Worker.
+ * El Worker hace la query a InfluxDB internamente y devuelve JSON limpio.
  * Retorna: { temp, hum, wind, bat, rssi, snr, timestamp } o null si falla.
  */
 async function fetchLastReading(device) {
-  // Flux query: trae el último valor de cada field en el measurement del dispositivo
-  // Busca en las últimas 30 días para garantizar encontrar datos aunque el nodo
-  // lleve tiempo sin transmitir. La marca "stale" se aplica en el frontend.
-  const fluxQuery = `
-from(bucket: "${INFLUX_BUCKET}")
-  |> range(start: -720h)
-  |> filter(fn: (r) => r["_measurement"] == "${device}")
-  |> filter(fn: (r) =>
-      r["_field"] == "temperature" or
-      r["_field"] == "humidity" or
-      r["_field"] == "wind_speed" or
-      r["_field"] == "battery" or
-      r["_field"] == "RSSI" or
-      r["_field"] == "SNR"
-  )
-  |> last()
-`;
-
-  const url = `${GRAFANA_BASE}/api/datasources/proxy/uid/${GRAFANA_DS_UID}/api/v2/query?org=${encodeURIComponent(INFLUX_ORG)}`;
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${GRAFANA_TOKEN}`,
-      'Content-Type': 'application/vnd.flux',
-      'Accept': 'application/csv',
-    },
-    body: fluxQuery,
-  });
+  const response = await fetch(`${WORKER_URL}/last-data/${device}`);
 
   if (!response.ok) {
-    console.error(`Grafana API error ${response.status} para ${device}`);
+    console.error(`Worker error ${response.status} para ${device}`);
     return null;
   }
 
-  const csv = await response.text();
-  return parseFluxCSV(csv);
-}
+  const data = await response.json();
 
-/**
- * Parsea la respuesta CSV de InfluxDB Flux.
- * Devuelve un objeto con los campos mapeados y el timestamp del último dato.
- */
-function parseFluxCSV(csv) {
-  const result = { temp: null, hum: null, wind: null, bat: null, rssi: null, snr: null, timestamp: null };
-
-  const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('#'));
-  if (lines.length < 2) return result;
-
-  // Primera línea: headers
-  const headers = lines[0].split(',').map(h => h.trim());
-  const iField  = headers.indexOf('_field');
-  const iValue  = headers.indexOf('_value');
-  const iTime   = headers.indexOf('_time');
-
-  if (iField === -1 || iValue === -1) return result;
-
-  let latestTime = null;
-
-  for (let i = 1; i < lines.length; i++) {
-    const cols  = lines[i].split(',');
-    if (cols.length < headers.length) continue;
-
-    const field = cols[iField]?.trim();
-    const value = parseFloat(cols[iValue]?.trim());
-    const time  = cols[iTime]?.trim();
-
-    if (isNaN(value)) continue;
-
-    // Guardar el timestamp más reciente de cualquier field
-    if (time) {
-      const t = new Date(time);
-      if (!latestTime || t > latestTime) latestTime = t;
-    }
-
-    switch (field) {
-      case 'temperature': result.temp  = value; break;
-      case 'humidity':    result.hum   = value; break;
-      case 'wind_speed':  result.wind  = value; break;
-      case 'battery':     result.bat   = value; break;
-      case 'RSSI':        result.rssi  = value; break;
-      case 'SNR':         result.snr   = value; break;
-    }
-  }
-
-  result.timestamp = latestTime;
-  return result;
+  return {
+    temp:      data.temperature ?? null,
+    hum:       data.humidity    ?? null,
+    wind:      data.wind_speed  ?? null,
+    bat:       data.battery     ?? null,
+    rssi:      data.RSSI        ?? null,
+    snr:       data.SNR         ?? null,
+    timestamp: data.timestamp ? new Date(data.timestamp) : null,
+  };
 }
 
 /**
@@ -760,12 +685,6 @@ function buildSkeletonPopup(n, id) {
 /** Fetch real y actualización del popup ya abierto */
 async function loadPopupData(id, marker) {
   const n = NODOS[id];
-
-  // Si el token no está configurado, mostrar aviso
-  if (GRAFANA_TOKEN === 'TU_SERVICE_ACCOUNT_TOKEN_AQUI') {
-    setPopupError(id, '⚠ Configura GRAFANA_TOKEN en el código');
-    return;
-  }
 
   let data;
   try {
