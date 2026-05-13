@@ -628,7 +628,7 @@ function initMap() {
 
     // Al abrir el popup → lanzar fetch real
     marker.on('popupopen', () => {
-      async function loadPopupData(id, marker) {
+      (async function loadPopupData(id, marker) {
   const n = NODOS[id];
 
   let data;
@@ -716,7 +716,7 @@ function initMap() {
       </button>
     </div>
   `);
-}
+      })(id, marker);
     });
 
     markers[id] = marker;
